@@ -1,7 +1,10 @@
 import React from "react";
-import "./App.css";
-import Tabs from "./Tabs";
-import Accordion from "./state/state-drills/Accordion";
+import ReactDOM from "react-dom";
+import Tabs from "../Tabs";
+import renderer from "react-test-renderer";
+// creates a wrapper instance of our component that we can interact with.
+import { shallow } from "enzyme";
+import toJson from "enzyme-to-json";
 
 const tabsProp = [
   {
@@ -21,32 +24,26 @@ const tabsProp = [
   }
 ];
 
-const sections = [
-  {
-    title: "Section 1",
-    content: "Lorem ipsum dolor sit amet consectetur adipisicing elit."
-  },
-  {
-    title: "Section 2",
-    content:
-      "Cupiditate tenetur aliquam necessitatibus id distinctio quas nihil ipsam nisi modi!"
-  },
-  {
-    title: "Section 3",
-    content:
-      "Animi amet cumque sint cupiditate officia ab voluptatibus libero optio et?"
-  }
-];
+describe("Tabs Component", () => {
+  it("renders without errors", () => {
+    const div = document.createElement("div");
+    ReactDOM.render(<Tabs />, div);
+    ReactDOM.unmountComponentAtNode(div);
+  });
 
-class App extends React.Component {
-  render() {
-    return (
-      <div>
-        <Tabs tabs={tabsProp} />
-        <Accordion sections={sections}/>
-      </div>
-    );
-  }
-}
+  it("renders empty given no tabs", () => {
+    const wrapper = shallow(<Tabs />);
+    expect(toJson(wrapper)).toMatchSnapshot();
+  });
 
-export default App;
+  it("renders the first tab by default", () => {
+    const wrapper = shallow(<Tabs tabs={tabsProp} />);
+    expect(toJson(wrapper)).toMatchSnapshot();
+  });
+
+  it('closes the first tab and opens any clicked tab', () => {
+    const wrapper = shallow(<Tabs tabs={tabsProp} />)
+    wrapper.find('button').at(1).simulate('click')
+    expect(toJson(wrapper)).toMatchSnapshot()
+  })
+});
